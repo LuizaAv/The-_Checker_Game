@@ -149,6 +149,7 @@ class NewGame extends Board{
                 break
             default:
                 console.log("Please enter a valid value")
+                this.history.pop()
                 this.move()
         }
 
@@ -167,6 +168,7 @@ class NewGame extends Board{
                 break
             default:
                 console.log("Please enter a valid value")
+                this.history.pop()
                 this.move()
         }
 
@@ -178,7 +180,6 @@ class NewGame extends Board{
     }
 
     undoMove(stepValue){
-        console.log(stepValue)
         if(stepValue === ""){
             let lastBoard = this.history.pop()
 
