@@ -85,9 +85,9 @@ class Board {
 
     winner(){
         if (this.stones[0] === 0) {
-            console.log(`The winner is whites`)
+            console.log(`The winner is white`)
         } else if (this.stones[1] === 0) {
-            console.log(`The winner is blacks`)
+            console.log(`The winner is black`)
         }
     }
 }
