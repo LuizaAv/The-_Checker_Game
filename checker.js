@@ -18,9 +18,9 @@ class Board {
             [{"value": "-", "role": ""}, {"value": 0, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 0, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 0, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 0, "role": "generalPLayer"}],
             [{"value": 0, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 0, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 0, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 0, "role": "generalPLayer"}, {"value": "-", "role": ""}],
             [{"value": "-", "role": ""}, {"value": 0, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 0, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 0, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 0, "role": "generalPLayer"}],
-            [{"value": 1, "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""}],
-            [{"value": "-", "role": ""},{"value": 0, "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""}],
-            [{"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": "-", "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}],
+            [{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""}],
+            [{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""},{"value": "-", "role": ""}],
+            [{"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}],
             [{"value": "-", "role": ""}, {"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 1, "role": "generalPLayer"}],
             [{"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}, {"value": 1, "role": "generalPLayer"}, {"value": "-", "role": ""}]
         ]
@@ -44,6 +44,7 @@ class Board {
                     aRow += `  - `                   
                 }
             })
+
             console.log(aRow)
             console.log(beforeRow)
         })
@@ -64,10 +65,15 @@ class Board {
         console.log(beforeRow)
         console.log("Steps history")
         console.log(beforeRow)
+
         for(let item = 0; item < this.history.length; ++item){
-            console.log(`${item}. ${this.history[item].turn === 1 ? "White" : "Black"} - ${this.history[item].value}`)
+            let number = item
+            console.log(`${++number}. ${this.history[item].turn === 1 ? "White" : "Black"} - ${this.history[item].value}`)
         }
+
         console.log(beforeRow)
+
+        return ""
     }
 
     reset(){
@@ -196,25 +202,29 @@ class NewGame extends Board{
 
         }else{
             let element
-            let startIndex 
+            let startIndex = -1
             for(let item = this.history.length - 1; item >= 0; --item){
                 --this.stepsDone
                 if(this.history[item].value === stepValue){
                     element = this.history[item]
-                    startIndex = this.history[item].id
+                    startIndex =  item 
                 }
             }
 
-            this.history.splice(startIndex + 1)
-            let lastBoard = this.history.pop()
+           if(element && startIndex !== -1){
+                this.history.splice(startIndex + 1)
+                let lastBoard = this.history.pop()
 
-            if(lastBoard){
-                this.board = lastBoard.board
-                this.step = lastBoard.turn
-                this.score = lastBoard.score
-                this.stones = lastBoard.stones
-                --this.stepsDone  
-            }  
+                if(lastBoard){
+                    this.board = lastBoard.board
+                    this.step = lastBoard.turn
+                    this.score = lastBoard.score
+                    this.stones = lastBoard.stones
+                    --this.stepsDone  
+                }else{
+                    console.log("The step doesn't exist")
+                }
+           } 
         }
 
         if(this.history.length === 0){
@@ -229,20 +239,21 @@ class NewGame extends Board{
     left(elemRow, elemCol){
         let newRow = this.board.length - 2 - elemRow
 
-        if(this.board[7-elemRow][elemCol].value === "-"){
+        if(this.board[7-elemRow][elemCol]?.value === "-"){
             console.log("Invalid value")
+            this.history.pop()
             this.move()
             return
         }
 
-        if(this.board[newRow][elemCol - 1].value === "-" && this.board[newRow][elemCol - 1].value !== undefined){
+        if(this.board[newRow][elemCol - 1]?.value === "-" && this.board[newRow][elemCol - 1]?.value !== undefined){
             this.board[newRow][elemCol - 1].value = (this.step === 1 ? 1 : 0)
             this.board[newRow + 1][elemCol].value = "-"
             this.step = (this.step === 1 ? 0 : 1)
             this.rotateBoard()
             this.printBoard()
             this.move()
-        }else if(this.board[newRow][elemCol - 1].value === (this.step === 1 ? 0 : 1) && this.board[newRow - 1][elemCol - 2].value === "-" && this.board[newRow - 1][elemCol - 2].value !== undefined){
+        }else if(this.board[newRow][elemCol - 1]?.value === (this.step === 1 ? 0 : 1) && this.board[newRow - 1][elemCol - 2]?.value === "-" && this.board[newRow - 1][elemCol - 2]?.value !== undefined){
             ++this.score[this.step]
             --this.stones[this.step === 1 ? 0 : 1]
             this.board[newRow - 1][elemCol - 2].value = this.step
@@ -260,6 +271,7 @@ class NewGame extends Board{
             }
         }else{
             console.log("Invalid input")
+            this.history.pop()
             this.move()
         }
     }
@@ -267,19 +279,20 @@ class NewGame extends Board{
     right(elemRow, elemCol){
         let newRow = this.board.length - 2 - elemRow
 
-        if(this.board[7-elemRow][elemCol].value === "-"){
+        if(this.board[7-elemRow][elemCol]?.value === "-"){
             console.log("Invalid value")
+            this.history.pop()
             this.move()
         }
 
-        if(this.board[newRow][elemCol + 1].value === "-" && this.board[newRow][elemCol + 1].value !== undefined){
+        if(this.board[newRow][elemCol + 1]?.value === "-" && this.board[newRow][elemCol + 1]?.value !== undefined){
             this.board[newRow][elemCol + 1].value = (this.step === 1 ? 1 : 0)
             this.board[newRow + 1][elemCol].value = "-"
             this.step = (this.step === 1 ? 0 : 1)
             this.rotateBoard()
             this.printBoard()
             this.move()
-        }else if(this.board[newRow][elemCol + 1].value === (this.step === 1 ? 0 : 1) && this.board[newRow - 1][elemCol + 2].value === "-" && this.board[newRow - 1][elemCol + 2].value !== undefined){
+        }else if(this.board[newRow][elemCol + 1]?.value === (this.step === 1 ? 0 : 1) && this.board[newRow - 1][elemCol + 2]?.value === "-" && this.board[newRow - 1][elemCol + 2]?.value !== undefined){
             ++this.score[this.step]
             --this.stones[this.step === 1 ? 0 : 1]
             this.board[newRow - 1][elemCol + 2].value = this.step
@@ -297,6 +310,7 @@ class NewGame extends Board{
             }
         }else{
             console.log("Invalid input")
+            this.history.pop()
             this.move()
         }
     }
@@ -305,12 +319,13 @@ class NewGame extends Board{
         //debugger
         let newRow = 8-elemRow
         let newCol = elemCol - 1
-        console.log(elemRow, elemCol)
+
         if(newRow < this.board.length && newCol >= 0){
-            if(this.board[newRow][newCol].value === "-"){
+            if(this.board[newRow][newCol]?.value === "-"){
                 console.log('Invalid move')
+                this.history.pop()
                 this.move()
-            }else if (this.board[newRow][newCol].value === (this.step === 1 ? 0 : 1) && newRow + 1 >= 0 && newCol - 1 >= 0 && this.board[newRow + 1][newCol - 1].value === "-"){
+            }else if (this.board[newRow][newCol]?.value === (this.step === 1 ? 0 : 1) && newRow + 1 >= 0 && newCol - 1 >= 0 && this.board[newRow + 1][newCol - 1]?.value === "-"){
                 ++this.score[this.step]
                 --this.stones[this.step === 1 ? 0 : 1]
                 this.board[newRow + 1][newCol - 1].value = this.step
@@ -328,10 +343,12 @@ class NewGame extends Board{
                 }
             }else{
                 console.log("Invalid input")
+                this.history.pop()
                 this.move()
             }
         }else{
             console.log("Invalid move")
+            this.history.pop()
             this.move()
         }
     }
@@ -340,13 +357,11 @@ class NewGame extends Board{
         let newRow = 8-elemRow
         let newCol = elemCol + 1
 
-        // console.log(elemRow, elemCol)
-
         if(newRow < this.board.length && newCol < this.board[0].length){
-            if(this.board[7-elemRow][elemCol].value === "-"){
+            if(this.board[7-elemRow][elemCol]?.value === "-"){
                 console.log("Invalid value")
                 this.move()
-            }else if(this.board[newRow + 1][newCol + 1].value === "-" && this.board[newRow][newCol].value === (this.step === 1 ? 0 : 1)){
+            }else if(this.board[newRow + 1][newCol + 1]?.value === "-" && this.board[newRow][newCol]?.value === (this.step === 1 ? 0 : 1)){
                 ++this.score[this.step]
                 --this.stones[(this.step === 1 ? 0 : 1)]
                 this.board[newRow + 1][newCol + 1].value = this.step
@@ -364,10 +379,12 @@ class NewGame extends Board{
                 }
             }else{
                 console.log("Invalid input")
+                this.history.pop()
                 this.move()
             }
         }else{
             console.log("Invalid move")
+            this.history.pop()
             this.move()
         }
     }
@@ -395,7 +412,7 @@ class NewGame extends Board{
 
     userInput(){
         console.log("Please enter the step's coordinates with this format 'C1L', where 'C' stands for vertical coordinate, '1' for horizontal and 'L' for direction: ")
-        console.log("You also can undo the step with entering 'undo' + 'move' with above mentioned format or just typing 'undo' for one step back")
+        console.log("You also can undo the step with entering 'undo' + 'move' with above mentioned format or just typing 'undo' for moving a step back")
 
         let coordinate = prompt()
 
@@ -411,5 +428,3 @@ let board = new Board()
 console.log(board.printBoard())
 let game = new NewGame()
 console.log(game.move())
-
-
